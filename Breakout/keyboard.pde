@@ -8,4 +8,5 @@ void keyReleased()
 {
   left = false;
   right = false;
+  
 }

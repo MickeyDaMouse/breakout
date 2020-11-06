@@ -1,3 +1,12 @@
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
+//sounds
+Minim minim;
+AudioPlayer intro,point,live,bounce,victory,loose;
 
 //modes
 int mode;
@@ -11,6 +20,10 @@ color red = #FF0000;
 color pink = #FF00FF;
 color blue = #0000FF;
 color cyan = #00FFFF;
+color green = #00FF00;
+
+//font
+PFont block;
 
 //"paddle"
 int px,py,pd;
@@ -18,6 +31,10 @@ int px,py,pd;
 //ball
 float vx,vy;
 int bx,by,bd;
+
+//lives/score
+int lives = 3;
+int score = 0;
 
 //movement of paddle
 boolean left;
@@ -29,16 +46,35 @@ int[] y;
 int brickd;
 boolean[] alive;
 
+boolean blockleft = true;
+
 //gif
 PImage[] gif;
 int n;
 int f;
 
+//win
+boolean win = true;
+
 void setup()
 {
-  size(1200,800,FX2D);
+  size(1200,800,P2D);
   
-  mode = GAME;
+  block = createFont("blocked.ttf",50);
+  textFont(block);
+  textAlign(CENTER,CENTER);
+  
+  mode = INTRO;
+  
+  //sounds
+  minim = new Minim(this);
+  point = minim.loadFile("coin.wav");
+  intro = minim.loadFile("intro.wav");
+  bounce = minim.loadFile("Bounce.wav");
+  victory = minim.loadFile("clapping.wav");
+  loose = minim.loadFile("failure.wav");
+  live = minim.loadFile("wrong.wav");
+
   
   //initializing paddle position
   px = width/2;
@@ -48,6 +84,7 @@ void setup()
   //initializing ball
   vx = random(-5,5);
   vy = random(-5,5);
+  if(vy<1&&vy>-1) vy = 1;
   bx = width/2;
   by = 600;
   bd = 20;
@@ -74,6 +111,7 @@ void setup()
     alive[i]=true;
     i++;
   }
+
   
   //gif
   n = 30;
